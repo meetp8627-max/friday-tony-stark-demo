@@ -40,3 +40,4 @@ In a production environment, you will be responsible for developing a solution t
 ## Contributing
 
 This template is open source and we welcome contributions! Please open a PR or issue through GitHub, and don't forget to join us in the [LiveKit Community Slack](https://livekit.io/join-slack)!
+
