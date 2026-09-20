@@ -7,7 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "fastmcp",
     "httpx",
-    "livekit-agents[deepgram,groq,openai,sarvam,silero]>=1.5.1",
+    "livekit-agents[deepgram,groq,openai,sarvam,silero]>=1.8.2",
     "livekit-plugins-google>=1.5.1",
     "livekit-api>=0.8.0",
     "fastapi>=0.115.0",
