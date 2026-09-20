@@ -51,7 +51,7 @@ app.add_middleware(
 )
 
 
-@app.get("/api/connection-details")
+@app.api_route("/api/connection-details", methods=["GET", "POST"])
 def connection_details(
     room: str | None = Query(default=None),
     identity: str | None = Query(default=None),
