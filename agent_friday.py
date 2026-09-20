@@ -233,10 +233,9 @@ def _build_tts():
         logger.info("TTS → Sarvam Bulbul v3")
         return sarvam.TTS(
             target_language_code=SARVAM_TTS_LANGUAGE,
-            model="bulbul:v3",
-            speaker=SARVAM_TTS_SPEAKER,
+            model="bulbul:v2",
+            speaker="anushka",
             pace=TTS_SPEED,
-            output_audio_codec="linear16",
         )
     elif TTS_PROVIDER == "openai":
         logger.info("TTS → OpenAI TTS (%s / %s)", OPENAI_TTS_MODEL, OPENAI_TTS_VOICE)
