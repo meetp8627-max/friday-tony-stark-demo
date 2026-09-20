@@ -236,6 +236,7 @@ def _build_tts():
             model="bulbul:v3",
             speaker=SARVAM_TTS_SPEAKER,
             pace=TTS_SPEED,
+            output_audio_codec="linear16",
         )
     elif TTS_PROVIDER == "openai":
         logger.info("TTS → OpenAI TTS (%s / %s)", OPENAI_TTS_MODEL, OPENAI_TTS_VOICE)
