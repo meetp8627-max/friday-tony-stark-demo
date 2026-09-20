@@ -13,4 +13,4 @@ const val hardcodedToken = ""
 //   "http://203.0.113.10:8080/api/connection-details"
 // While testing on the same Wi-Fi as your dev machine, your machine's LAN IP works too, e.g.:
 //   "http://192.168.1.23:8080/api/connection-details"
-const val homepageAgentEndpoint = "http://YOUR_SERVER_ADDRESS:8080/api/connection-details"
+const val homepageAgentEndpoint = "https://just-gentleness-production-2cec.up.railway.app/api/connection-details"
