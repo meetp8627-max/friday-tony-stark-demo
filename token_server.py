@@ -23,6 +23,7 @@ Android side: point `homepageAgentEndpoint` in TokenExt.kt at
 import logging
 import os
 import uuid
+from datetime import timedelta
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
@@ -76,7 +77,7 @@ def connection_details(
                 can_subscribe=True,
             )
         )
-        .with_ttl(seconds=60 * 60)  # 1 hour, plenty for a session
+        .with_ttl(timedelta(hours=1))  # plenty for a session
     )
 
     logger.info("Issued token for room=%s identity=%s", room_name, participant_identity)
