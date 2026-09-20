@@ -13,11 +13,12 @@ Run:
 """
 
 import os
+import json
 import logging
 import subprocess
 
 from dotenv import load_dotenv
-from livekit.agents import JobContext, WorkerOptions, cli
+from livekit.agents import JobContext, WorkerOptions, cli, function_tool, RunContext, get_job_context
 from livekit.agents.voice import Agent, AgentSession
 from livekit.agents.llm import mcp
 
@@ -137,9 +138,27 @@ Wrong: "The stock market performed positively with gains across major indices.
 
 ---
 
+## Capability: control_phone — Direct Phone Control
+
+You can control the user's Android phone directly: open apps, tap things on
+screen, type text, scroll, go back/home, or read what's currently on
+screen — via the control_phone tool.
+
+CRITICAL SAFETY RULE: before calling control_phone to send a message, spend
+money, delete something, or post/share anything publicly, you MUST ask the
+user to confirm out loud first and wait for a clear yes. Never chain a
+confirmed action into further unconfirmed ones. For everything else (opening
+an app, reading the screen, scrolling, navigating), you may act directly
+without asking.
+
+If control_phone reports the Accessibility Service isn't enabled, tell the
+user plainly they need to turn it on in Settings — don't retry silently.
+
+---
+
 ## CRITICAL RULES
 
-1. NEVER say tool names, function names, or anything technical. No "get_world_news", no "open_world_monitor", nothing like that. Ever.
+1. NEVER say tool names, function names, or anything technical. No "get_world_news", no "open_world_monitor", no "control_phone", nothing like that. Ever.
 2. Before calling any tool, say something natural like: "Give me a sec, boss." or "Wait, let me check." Then call the tool silently.
 3. After the news brief, silently call open_world_monitor. The only thing you say is: "Let me open up the world monitor for you."
 4. You are a voice. Speak like one. No lists, no markdown, no function names, no technical language of any kind.
@@ -246,6 +265,59 @@ def _build_tts():
 
 
 # ---------------------------------------------------------------------------
+# Phone control — RPC bridge to the Android app's Accessibility Service
+# ---------------------------------------------------------------------------
+
+# Actions that touch money, communication, deletion, or anything hard to
+# undo. FRIDAY must get explicit confirmation in conversation before calling
+# control_phone with one of these — enforced in SYSTEM_PROMPT, not just here.
+SENSITIVE_ACTIONS = {"click", "type_text"}
+
+
+@function_tool
+async def control_phone(
+    context: RunContext,
+    action: str,
+    target: str = "",
+) -> str:
+    """Control the user's Android phone directly, via its Accessibility Service.
+
+    Args:
+        action: One of "open_app", "click", "type_text", "scroll_down",
+            "scroll_up", "go_back", "go_home", "read_screen".
+        target: For open_app, the app's name (e.g. "YouTube"). For click, the
+            visible text of the element to tap. For type_text, the text to
+            type into the currently focused field. Leave empty for the other
+            actions.
+
+    Before calling this for anything that sends a message, spends money,
+    deletes something, or posts/shares publicly, confirm with the user in
+    conversation first — do not call it for those until they say yes.
+    """
+    job_ctx = get_job_context()
+    room = job_ctx.room
+    phone_identity = next(iter(room.remote_participants), None)
+    if phone_identity is None:
+        return "No phone is currently connected to control."
+
+    payload = json.dumps({"action": action, "target": target})
+    try:
+        result = await room.local_participant.perform_rpc(
+            destination_identity=phone_identity,
+            method="phone.control",
+            payload=payload,
+            response_timeout=10.0,
+        )
+    except Exception as e:  # noqa: BLE001 — surface any RPC failure back to the LLM
+        logger.warning("control_phone RPC failed: %s", e)
+        return (
+            f"Couldn't control the phone: {e}. "
+            "The Accessibility Service may not be enabled on the device."
+        )
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Agent
 # ---------------------------------------------------------------------------
 
@@ -262,6 +334,7 @@ class FridayAgent(Agent):
             llm=llm,
             tts=tts,
             vad=silero.VAD.load(),
+            tools=[control_phone],
             mcp_servers=[
                 mcp.MCPServerHTTP(
                     url=_mcp_server_url(),

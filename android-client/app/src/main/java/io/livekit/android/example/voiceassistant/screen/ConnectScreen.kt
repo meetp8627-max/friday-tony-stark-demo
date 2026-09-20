@@ -1,5 +1,7 @@
 package io.livekit.android.example.voiceassistant.screen
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,8 +17,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -38,6 +43,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.livekit.android.example.voiceassistant.R
+import io.livekit.android.example.voiceassistant.control.FridayAccessibilityService
 import io.livekit.android.example.voiceassistant.hardcodedToken
 import io.livekit.android.example.voiceassistant.hardcodedUrl
 import io.livekit.android.example.voiceassistant.homepageAgentEndpoint
@@ -134,6 +140,45 @@ fun ConnectScreen(
                         )
                     )
                 }
+            }
+
+            Spacer(Modifier.size(16.dp))
+
+            val context = LocalContext.current
+            var accessibilityEnabled by remember { mutableStateOf(FridayAccessibilityService.isEnabled) }
+
+            // Re-check whenever the screen is shown — the user grants this in a
+            // separate Settings screen, then comes back here.
+            LaunchedEffect(Unit) {
+                accessibilityEnabled = FridayAccessibilityService.isEnabled
+            }
+
+            if (!accessibilityEnabled) {
+                OutlinedButton(
+                    shape = RoundedCornerShape(20),
+                    onClick = {
+                        context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                    }
+                ) {
+                    Text(
+                        text = "Enable phone control",
+                        fontSize = 13.sp,
+                    )
+                }
+                Spacer(Modifier.size(4.dp))
+                Text(
+                    text = "Lets FRIDAY open apps, tap, and type on your behalf. Optional — calls still work without it.",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(0.75f)
+                )
+            } else {
+                Text(
+                    text = "✓ Phone control enabled",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                )
             }
         }
     }
