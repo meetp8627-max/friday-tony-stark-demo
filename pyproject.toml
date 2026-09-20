@@ -9,12 +9,16 @@ dependencies = [
     "httpx",
     "livekit-agents[deepgram,groq,openai,sarvam,silero]>=1.5.1",
     "livekit-plugins-google>=1.5.1",
+    "livekit-api>=0.8.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
     "python-dotenv",
 ]
 
 [project.scripts]
 friday = "server:main"
 friday_voice = "agent_friday:dev" # Points to the wrapper
+friday_token = "token_server:main" # Mints LiveKit tokens for the Android app
 
 [build-system]
 requires = ["hatchling"]
