@@ -5,10 +5,8 @@ WORKDIR /app
 # uv = fast Python package manager, matches this project's pyproject.toml/uv.lock
 RUN pip install --no-cache-dir uv
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --no-dev || uv sync
-
 COPY . .
+RUN uv sync --no-dev || uv sync
 
 RUN chmod +x start_all.sh
 
