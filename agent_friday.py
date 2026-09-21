@@ -35,7 +35,7 @@ TTS_PROVIDER       = "sarvam"
 
 GEMINI_LLM_MODEL   = "gemini-2.5-flash"
 OPENAI_LLM_MODEL   = "gpt-4o"
-GROQ_LLM_MODEL     = "llama-3.1-8b-instant"
+GROQ_LLM_MODEL     = "openai/gpt-oss-120b"
 
 OPENAI_TTS_MODEL   = "tts-1"
 OPENAI_TTS_VOICE   = "nova"       # "nova" has a clean, confident female tone
