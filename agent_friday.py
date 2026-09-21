@@ -246,7 +246,12 @@ def _build_llm():
         return lk_google.LLM(model=GEMINI_LLM_MODEL, api_key=os.getenv("GOOGLE_API_KEY"))
     elif LLM_PROVIDER == "groq":
         logger.info("LLM → Groq (%s)", GROQ_LLM_MODEL)
-        return lk_groq.LLM(model=GROQ_LLM_MODEL, api_key=os.getenv("GROQ_API_KEY"))
+        return lk_groq.LLM(
+            model=GROQ_LLM_MODEL,
+            api_key=os.getenv("GROQ_API_KEY"),
+            reasoning_effort="low",
+            max_completion_tokens=800,
+        )
     else:
         raise ValueError(f"Unknown LLM_PROVIDER: {LLM_PROVIDER!r}")
 
