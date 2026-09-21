@@ -42,7 +42,7 @@ OPENAI_TTS_VOICE   = "nova"       # "nova" has a clean, confident female tone
 TTS_SPEED           = 1.15
 
 SARVAM_TTS_LANGUAGE = "en-IN"
-SARVAM_TTS_SPEAKER  = "rahul"
+SARVAM_TTS_SPEAKER  = "kabir"
 
 # MCP server running on Windows host
 MCP_SERVER_PORT = 8000
