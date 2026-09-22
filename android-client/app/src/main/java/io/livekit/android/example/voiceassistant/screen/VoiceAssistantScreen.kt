@@ -97,6 +97,20 @@ fun VoiceAssistant(
     var requestedAudio by remember { mutableStateOf(true) } // Turn on audio by default.
     var requestedVideo by remember { mutableStateOf(false) }
 
+    val overlayContext = LocalContext.current
+    DisposableEffect(Unit) {
+        if (android.provider.Settings.canDrawOverlays(overlayContext)) {
+            overlayContext.startForegroundService(
+                android.content.Intent(overlayContext, io.livekit.android.example.voiceassistant.overlay.OverlayBarService::class.java)
+            )
+        }
+        onDispose {
+            overlayContext.stopService(
+                android.content.Intent(overlayContext, io.livekit.android.example.voiceassistant.overlay.OverlayBarService::class.java)
+            )
+        }
+    }
+
     requirePermissions(requestedAudio, requestedVideo)
 
     val canEnableMic by rememberCanEnableMic()

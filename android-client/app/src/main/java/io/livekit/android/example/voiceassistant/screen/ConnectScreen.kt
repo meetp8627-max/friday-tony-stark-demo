@@ -180,6 +180,46 @@ fun ConnectScreen(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 )
             }
+
+            Spacer(Modifier.size(12.dp))
+
+            var overlayEnabled by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
+            LaunchedEffect(Unit) {
+                overlayEnabled = Settings.canDrawOverlays(context)
+            }
+
+            if (!overlayEnabled) {
+                OutlinedButton(
+                    shape = RoundedCornerShape(20),
+                    onClick = {
+                        context.startActivity(
+                            Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                android.net.Uri.parse("package:${context.packageName}")
+                            )
+                        )
+                    }
+                ) {
+                    Text(
+                        text = "Enable call overlay",
+                        fontSize = 13.sp,
+                    )
+                }
+                Spacer(Modifier.size(4.dp))
+                Text(
+                    text = "Shows a glowing bar at the top of your screen while on a call, even in other apps. Optional.",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(0.75f)
+                )
+            } else {
+                Text(
+                    text = "✓ Call overlay enabled",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                )
+            }
         }
     }
 }

@@ -66,6 +66,10 @@ fun AgentVisualization(
                     val intensity = siriIntensity(agent.agentState)
                     val label = siriStateLabel(agent.agentState, agent.isConnected)
 
+                    androidx.compose.runtime.LaunchedEffect(label, intensity) {
+                        io.livekit.android.example.voiceassistant.overlay.OverlayState.update(label, intensity)
+                    }
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         SiriGlowOrb(
                             intensity = intensity,
