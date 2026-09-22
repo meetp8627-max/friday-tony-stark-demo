@@ -167,7 +167,7 @@ fun ConnectScreen(
                 }
                 Spacer(Modifier.size(4.dp))
                 Text(
-                    text = "Lets FRIDAY open apps, tap, and type on your behalf. Optional — calls still work without it.",
+                    text = "Lets MPro open apps, tap, and type on your behalf. Optional — calls still work without it.",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     textAlign = TextAlign.Center,

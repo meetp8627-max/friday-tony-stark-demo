@@ -97,11 +97,11 @@ class OverlayBarService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedS
         val channelId = "friday_overlay"
         val manager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "FRIDAY call overlay", NotificationManager.IMPORTANCE_MIN)
+            val channel = NotificationChannel(channelId, "MPro call overlay", NotificationManager.IMPORTANCE_MIN)
             manager.createNotificationChannel(channel)
         }
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("FRIDAY is listening")
+            .setContentTitle("MPro is listening")
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setOngoing(true)
