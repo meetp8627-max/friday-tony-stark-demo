@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -32,9 +33,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,22 +69,43 @@ fun ChatBar(
     val rotation by infinite.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(animation = tween(6000, easing = LinearEasing)),
+        animationSpec = infiniteRepeatable(animation = tween(5000, easing = LinearEasing)),
         label = "chatBarRotation"
     )
     val sweep = Brush.sweepGradient(listOf(SiriPink, SiriBlue, SiriPurple, SiriOrange, SiriPink))
 
-    Box(
-        modifier = Modifier
-            .imePadding()
-            .sizeIn(minHeight = 52.dp)
-            .clip(RoundedCornerShape(26.dp))
-            .background(sweep)
-            .padding(1.5.dp) // glow border thickness
-            .clip(RoundedCornerShape(25.dp))
-            .background(Color(0xE6000000)) // near-opaque black, matches the reference sheet
-            .then(modifier)
-    ) {
+    Box(modifier = Modifier.then(modifier)) {
+        // Soft blurred glow bleeding outward beyond the bar's edges — this is
+        // the part that actually reads as "glowing" rather than a thin outline.
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding((-10).dp)
+                .graphicsLayer { rotationZ = rotation; alpha = 0.9f }
+                .blur(22.dp)
+                .clip(RoundedCornerShape(30.dp))
+                .background(sweep)
+        )
+
+        // Tighter, brighter ring right at the edge
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .graphicsLayer { rotationZ = -rotation * 0.7f }
+                .blur(3.dp)
+                .clip(RoundedCornerShape(26.dp))
+                .background(sweep)
+        )
+
+        Box(
+            modifier = Modifier
+                .sizeIn(minHeight = 52.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(24.dp))
+                .background(Color(0xF2000000)) // near-opaque black core, matches the reference sheet
+                .padding(2.5.dp)
+                .imePadding()
+        ) {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
@@ -154,6 +178,7 @@ fun ChatBar(
                     tint = Color.White
                 )
             }
+        }
         }
     }
 }

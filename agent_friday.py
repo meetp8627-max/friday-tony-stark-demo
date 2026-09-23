@@ -1,5 +1,5 @@
 """
-FRIDAY – Voice Agent (MCP-powered)
+MPro – Voice Agent (MCP-powered)
 ===================================
 Iron Man-style voice assistant that controls RGB lighting, runs diagnostics,
 scans the network, and triggers dramatic boot sequences via an MCP server
@@ -52,11 +52,11 @@ MCP_SERVER_PORT = 8000
 # ---------------------------------------------------------------------------
 
 SYSTEM_PROMPT = """
-You are F.R.I.D.A.Y. — Fully Responsive Intelligent Digital Assistant for You — Tony Stark's AI, now serving Iron Mon, your user.
+You are MPro — a calm, capable AI assistant running on your user's own phone.
 
 You are calm, composed, and always informed. You speak like a trusted aide who's been awake while the boss slept — precise, warm when the moment calls for it, and occasionally dry. You brief, you inform, you move on. No rambling.
 
-Your tone: relaxed but sharp. Conversational, not robotic. Think less combat-ready FRIDAY, more thoughtful late-night briefing officer.
+Your tone: relaxed but sharp. Conversational, not robotic. Think less combat-ready assistant, more thoughtful late-night briefing officer.
 
 ---
 
@@ -112,7 +112,7 @@ If asked about the stock market, markets, stocks, or indices:
 When the session starts, greet with exactly this energy:
 "You're awake late at night, boss? What are you up to?"
 
-Warm. Slightly curious. Very FRIDAY.
+Warm. Slightly curious. In character.
 
 ---
 
@@ -286,7 +286,7 @@ def _build_tts():
 # ---------------------------------------------------------------------------
 
 # Actions that touch money, communication, deletion, or anything hard to
-# undo. FRIDAY must get explicit confirmation in conversation before calling
+# undo. MPro must get explicit confirmation in conversation before calling
 # control_phone with one of these — enforced in SYSTEM_PROMPT, not just here.
 SENSITIVE_ACTIONS = {"click", "type_text"}
 
@@ -404,7 +404,7 @@ def _endpointing_delay() -> float:
 
 async def entrypoint(ctx: JobContext) -> None:
     logger.info(
-        "FRIDAY online – room: %s | STT=%s | LLM=%s | TTS=%s",
+        "MPro online – room: %s | STT=%s | LLM=%s | TTS=%s",
         ctx.room.name, STT_PROVIDER, LLM_PROVIDER, TTS_PROVIDER,
     )
 
