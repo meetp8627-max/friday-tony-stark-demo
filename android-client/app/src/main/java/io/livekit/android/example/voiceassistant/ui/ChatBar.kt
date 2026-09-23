@@ -85,7 +85,7 @@ fun ChatBar(
                 .blur(22.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(sweep)
-        )
+        ) {}
 
         // Tighter, brighter ring right at the edge
         Box(
@@ -95,7 +95,7 @@ fun ChatBar(
                 .blur(3.dp)
                 .clip(RoundedCornerShape(26.dp))
                 .background(sweep)
-        )
+        ) {}
 
         Box(
             modifier = Modifier
@@ -168,8 +168,8 @@ fun ChatBar(
                         end.linkTo(parent.end, 2.dp)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                        width = Dimension.value(36.dp)
-                        height = Dimension.value(36.dp)
+                        width = Dimension.preferredValue(36.dp)
+                        height = Dimension.preferredValue(36.dp)
                     }
             ) {
                 Icon(
