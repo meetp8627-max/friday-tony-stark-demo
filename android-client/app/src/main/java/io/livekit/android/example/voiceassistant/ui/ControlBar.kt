@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,9 +72,32 @@ fun ControlBar(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .shadow(
+                elevation = 14.dp,
+                shape = RoundedCornerShape(50),
+                ambientColor = Color.Black,
+                spotColor = Color.Black
+            )
             .clip(RoundedCornerShape(50))
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
+            .background(Color(0xB3121016)) // translucent glass fill, matches the chat bar
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.08f),
+                        Color.White.copy(alpha = 0.0f)
+                    )
+                )
+            ) // specular highlight sheen
+            .border(
+                width = 1.dp,
+                brush = Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.30f),
+                        Color.White.copy(alpha = 0.05f)
+                    )
+                ),
+                shape = RoundedCornerShape(50)
+            )
             .padding(horizontal = 20.dp)
     ) {
         val micIcon = if (isMicEnabled) {

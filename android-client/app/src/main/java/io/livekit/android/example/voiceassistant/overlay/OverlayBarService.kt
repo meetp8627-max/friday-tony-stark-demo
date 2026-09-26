@@ -192,7 +192,15 @@ private fun OverlayBarContent() {
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(50))
-                    .background(Color(0xCC000000))
+                    .background(Color(0xCC121016)) // translucent glass fill
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.10f),
+                                Color.White.copy(alpha = 0.0f)
+                            )
+                        )
+                    ) // specular highlight sheen
                     .padding(horizontal = 12.dp),
                 contentAlignment = Alignment.Center,
             ) {
