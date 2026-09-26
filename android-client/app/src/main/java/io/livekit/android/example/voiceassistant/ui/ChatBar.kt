@@ -6,6 +6,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,6 +88,16 @@ fun ChatBar(
             .padding(1.5.dp) // glow border thickness
             .clip(RoundedCornerShape(25.dp))
             .background(Color(0xB3121016)) // translucent glass fill
+            .border(
+                width = 1.dp,
+                brush = Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.35f),
+                        Color.White.copy(alpha = 0.06f)
+                    )
+                ),
+                shape = RoundedCornerShape(25.dp)
+            )
             .then(modifier)
     ) {
         ConstraintLayout(
