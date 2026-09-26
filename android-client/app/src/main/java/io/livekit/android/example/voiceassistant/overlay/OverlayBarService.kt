@@ -48,10 +48,10 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
-private val SiriPink = Color(0xFFFF3DAE)
-private val SiriBlue = Color(0xFF3D7BFF)
-private val SiriPurple = Color(0xFF9A4DFF)
-private val SiriOrange = Color(0xFFFF9C3D)
+private val SiriAmber = Color(0xFFE8B478)
+private val SiriRose = Color(0xFFD98C9E)
+private val SiriViolet = Color(0xFF8E8FD9)
+private val SiriTeal = Color(0xFF7FB8C4)
 
 /**
  * Runs only while a call is active (started/stopped from the call screen).
@@ -171,7 +171,7 @@ private fun OverlayBarContent() {
     )
 
     val sweep = Brush.horizontalGradient(
-        listOf(SiriPink, SiriBlue, SiriPurple, SiriOrange, SiriPink)
+        listOf(SiriAmber, SiriRose, SiriViolet, SiriTeal, SiriAmber)
     )
 
     Box(

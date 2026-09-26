@@ -46,10 +46,10 @@ import androidx.constraintlayout.compose.Dimension
 
 // Same glow palette as the call-state orb and overlay bar — keeps the whole
 // app's "new Siri" look consistent.
-private val SiriPink = Color(0xFFFF3DAE)
-private val SiriBlue = Color(0xFF3D7BFF)
-private val SiriPurple = Color(0xFF9A4DFF)
-private val SiriOrange = Color(0xFFFF9C3D)
+private val SiriAmber = Color(0xFFE8B478)
+private val SiriRose = Color(0xFFD98C9E)
+private val SiriViolet = Color(0xFF8E8FD9)
+private val SiriTeal = Color(0xFF7FB8C4)
 
 @Composable
 fun ChatBar(
@@ -71,7 +71,7 @@ fun ChatBar(
         animationSpec = infiniteRepeatable(animation = tween(6000, easing = LinearEasing)),
         label = "chatBarRotation"
     )
-    val sweep = Brush.sweepGradient(listOf(SiriPink, SiriBlue, SiriPurple, SiriOrange, SiriPink))
+    val sweep = Brush.sweepGradient(listOf(SiriAmber, SiriRose, SiriViolet, SiriTeal, SiriAmber))
 
     Box(
         modifier = Modifier

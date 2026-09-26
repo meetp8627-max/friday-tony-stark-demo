@@ -25,19 +25,21 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
 /**
- * The glow palette Apple has been teasing for the redesigned Siri coming in iOS 27:
- * a dark, Dynamic-Island-based interface with a rotating pink/blue/purple/orange glow
- * around its edges, most striking in dark mode.
+ * A calm, atmospheric palette — muted amber/gold and soft blue-violet, closer to
+ * how light actually diffuses through frosted glass than a saturated rainbow.
+ * Intentionally desaturated: color here should read as ambient, not decorative.
  */
-private val SiriPink = Color(0xFFFF3DAE)
-private val SiriBlue = Color(0xFF3D7BFF)
-private val SiriPurple = Color(0xFF9A4DFF)
-private val SiriOrange = Color(0xFFFF9C3D)
+private val SiriAmber = Color(0xFFE8B478)
+private val SiriRose = Color(0xFFD98C9E)
+private val SiriViolet = Color(0xFF8E8FD9)
+private val SiriTeal = Color(0xFF7FB8C4)
 
 /**
- * A pulsing, rotating glow "island" — the visual centerpiece when FRIDAY is idle,
- * listening, thinking, or speaking. [intensity] (0f..1f) drives how energetic the
- * glow looks; drive it from agent state (listening/speaking = high, idle = low).
+ * A soft, breathing glow blob — the visual centerpiece when MPro is idle,
+ * listening, thinking, or speaking. [intensity] (0f..1f) drives how alive it
+ * looks; drive it from agent state (listening/speaking = high, idle = low).
+ * Built as one continuous soft field rather than a hard-edged ring, so it
+ * reads as ambient light rather than a static decoration.
  */
 @Composable
 fun SiriGlowOrb(
@@ -47,33 +49,35 @@ fun SiriGlowOrb(
 ) {
     val infinite = rememberInfiniteTransition(label = "siriGlow")
 
+    // Slow, calm drift even at rest — never fully static, but never frantic.
     val rotation by infinite.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = (4200 - (intensity * 2600)).toInt().coerceAtLeast(900), easing = LinearEasing),
+            animation = tween(durationMillis = (9000 - (intensity * 5000)).toInt().coerceAtLeast(2200), easing = LinearEasing),
         ),
         label = "rotation"
     )
 
     val breathing by infinite.animateFloat(
-        initialValue = 0.93f,
+        initialValue = 0.95f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1300, easing = LinearEasing),
+            animation = tween(durationMillis = 1600, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "breathing"
     )
 
-    val scale = breathing + (intensity * 0.10f)
+    val scale = breathing + (intensity * 0.08f)
 
-    val sweep = Brush.sweepGradient(
-        listOf(SiriPink, SiriBlue, SiriPurple, SiriOrange, SiriPink)
+    val atmosphere = Brush.sweepGradient(
+        listOf(SiriAmber, SiriRose, SiriViolet, SiriTeal, SiriAmber)
     )
 
     Box(contentAlignment = Alignment.Center, modifier = modifier) {
-        // Diffuse outer glow — the "light bleeding out" look
+        // Wide, very soft diffuse field — heavy blur relative to its size so
+        // there's no crisp ring silhouette, just ambient color bleeding out.
         Box(
             modifier = Modifier
                 .size(size)
@@ -81,33 +85,46 @@ fun SiriGlowOrb(
                     scaleX = scale
                     scaleY = scale
                     rotationZ = rotation
-                    alpha = 0.55f + (intensity * 0.25f)
+                    alpha = 0.32f + (intensity * 0.18f)
                 }
-                .blur(56.dp)
+                .blur(72.dp)
                 .clip(RoundedCornerShape(50))
-                .background(sweep)
+                .background(atmosphere)
         )
 
-        // Tighter, brighter ring closer to the core
+        // A tighter inner field, blurred just enough to stay soft — this is
+        // what gives the blob some internal depth instead of one flat wash.
         Box(
             modifier = Modifier
-                .size(size * 0.72f)
+                .size(size * 0.62f)
                 .graphicsLayer {
                     scaleX = scale
                     scaleY = scale
-                    rotationZ = -rotation * 0.6f
+                    rotationZ = -rotation * 0.5f
+                    alpha = 0.5f + (intensity * 0.2f)
                 }
-                .blur(20.dp)
+                .blur(36.dp)
                 .clip(RoundedCornerShape(50))
-                .background(sweep)
+                .background(atmosphere)
         )
 
-        // Dark "island" core — everything else glows around this
+        // Translucent glass core — lets a hint of the glow underneath show
+        // through rather than fully occluding it with a flat opaque circle,
+        // plus a soft specular highlight stacked on the same element.
         Box(
             modifier = Modifier
-                .size(size * 0.55f)
+                .size(size * 0.46f)
                 .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.88f))
+                .background(
+                    Brush.radialGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.10f),
+                            Color.White.copy(alpha = 0.0f)
+                        ),
+                        radius = 220f
+                    )
+                )
         )
     }
 }
