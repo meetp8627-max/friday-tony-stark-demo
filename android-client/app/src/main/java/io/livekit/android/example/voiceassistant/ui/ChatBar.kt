@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -89,6 +88,14 @@ fun ChatBar(
             .padding(1.5.dp) // glow border thickness
             .clip(RoundedCornerShape(25.dp))
             .background(Color(0xB3121016)) // translucent glass fill
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.10f),
+                        Color.White.copy(alpha = 0.0f)
+                    )
+                )
+            ) // specular highlight sheen, stacked over the fill above
             .border(
                 width = 1.dp,
                 brush = Brush.verticalGradient(
@@ -101,20 +108,6 @@ fun ChatBar(
             )
             .then(modifier)
     ) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(RoundedCornerShape(25.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color.White.copy(alpha = 0.10f),
-                            Color.White.copy(alpha = 0.0f)
-                        )
-                    )
-                )
-        ) {}
-
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
