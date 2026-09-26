@@ -1,13 +1,16 @@
 package io.livekit.android.example.voiceassistant.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -20,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -29,14 +33,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+
+// Same glow palette as the call-state orb and overlay bar — keeps the whole
+// app's "new Siri" look consistent.
+private val SiriPink = Color(0xFFFF3DAE)
+private val SiriBlue = Color(0xFF3D7BFF)
+private val SiriPurple = Color(0xFF9A4DFF)
+private val SiriOrange = Color(0xFFFF9C3D)
 
 @Composable
 fun ChatBar(
@@ -51,55 +62,26 @@ fun ChatBar(
         contentColor = Color.White
     )
 
-    val barShape = RoundedCornerShape(26.dp)
+    val infinite = rememberInfiniteTransition(label = "chatBarGlow")
+    val rotation by infinite.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(animation = tween(6000, easing = LinearEasing)),
+        label = "chatBarRotation"
+    )
+    val sweep = Brush.sweepGradient(listOf(SiriPink, SiriBlue, SiriPurple, SiriOrange, SiriPink))
 
     Box(
         modifier = Modifier
-            .then(modifier)
-            .sizeIn(minHeight = 52.dp)
-            .fillMaxWidth()
-            .shadow(
-                elevation = 18.dp,
-                shape = barShape,
-                ambientColor = Color.Black.copy(alpha = 0.5f),
-                spotColor = Color.Black.copy(alpha = 0.5f)
-            )
-            .clip(barShape)
-            // Translucent tinted fill — lets whatever is behind it show
-            // through faintly, which is what actually reads as "glass"
-            // rather than a painted-on flat black bar.
-            .background(Color(0xB3121016))
-            // Thin bright edge that catches light at the top, fading
-            // toward the bottom — the "this has an edge" cue real glass
-            // always has.
-            .border(
-                width = 1.dp,
-                brush = Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.35f),
-                        Color.White.copy(alpha = 0.06f)
-                    )
-                ),
-                shape = barShape
-            )
             .imePadding()
+            .sizeIn(minHeight = 52.dp)
+            .clip(RoundedCornerShape(26.dp))
+            .background(sweep)
+            .padding(1.5.dp) // glow border thickness
+            .clip(RoundedCornerShape(25.dp))
+            .background(Color(0xB3121016)) // translucent glass fill
+            .then(modifier)
     ) {
-        // Specular highlight — a soft sheen across the upper portion, like
-        // light catching a curved glass surface.
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(barShape)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color.White.copy(alpha = 0.10f),
-                            Color.White.copy(alpha = 0.0f)
-                        )
-                    )
-                )
-        ) {}
-
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,8 +144,8 @@ fun ChatBar(
                         end.linkTo(parent.end, 2.dp)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                        width = Dimension.preferredValue(36.dp)
-                        height = Dimension.preferredValue(36.dp)
+                        width = Dimension.value(36.dp)
+                        height = Dimension.value(36.dp)
                     }
             ) {
                 Icon(
