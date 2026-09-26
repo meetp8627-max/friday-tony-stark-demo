@@ -6,6 +6,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -69,43 +71,83 @@ fun ChatBar(
     val rotation by infinite.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(animation = tween(5000, easing = LinearEasing)),
+        animationSpec = infiniteRepeatable(animation = tween(7000, easing = LinearEasing)),
         label = "chatBarRotation"
     )
-    val sweep = Brush.sweepGradient(listOf(SiriPink, SiriBlue, SiriPurple, SiriOrange, SiriPink))
+    // Desaturated / lower-alpha than the orb's glow — real ambient light bleed
+    // reads as soft color, not a saturated rope wrapped around the shape.
+    val ambientSweep = Brush.sweepGradient(
+        listOf(
+            SiriPink.copy(alpha = 0.55f),
+            SiriBlue.copy(alpha = 0.55f),
+            SiriPurple.copy(alpha = 0.55f),
+            SiriOrange.copy(alpha = 0.55f),
+            SiriPink.copy(alpha = 0.55f),
+        )
+    )
 
     Box(modifier = Modifier.then(modifier)) {
-        // Soft blurred glow bleeding outward beyond the bar's edges — this is
-        // the part that actually reads as "glowing" rather than a thin outline.
+        // Soft, wide ambient glow bleeding outward — barely-there color, not a
+        // crisp outline. This is what a light source behind frosted glass
+        // actually looks like: diffuse, low-contrast, no hard edge.
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .padding((-10).dp)
-                .graphicsLayer { rotationZ = rotation; alpha = 0.9f }
-                .blur(22.dp)
-                .clip(RoundedCornerShape(30.dp))
-                .background(sweep)
-        ) {}
-
-        // Tighter, brighter ring right at the edge
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .graphicsLayer { rotationZ = -rotation * 0.7f }
-                .blur(3.dp)
-                .clip(RoundedCornerShape(26.dp))
-                .background(sweep)
+                .padding((-14).dp)
+                .graphicsLayer { rotationZ = rotation; alpha = 0.6f }
+                .blur(32.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(ambientSweep)
         ) {}
 
         Box(
             modifier = Modifier
                 .sizeIn(minHeight = 52.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xF2000000)) // near-opaque black core, matches the reference sheet
-                .padding(2.5.dp)
+                .shadow(
+                    elevation = 18.dp,
+                    shape = RoundedCornerShape(26.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.5f),
+                    spotColor = Color.Black.copy(alpha = 0.5f),
+                )
+                .clip(RoundedCornerShape(26.dp))
+                // Translucent tinted fill — lets whatever is behind it show
+                // through faintly, which is what actually reads as "glass"
+                // rather than a painted-on black bar.
+                .background(Color(0xB3121016))
+                // Thin bright edge that catches light at the top, fading
+                // toward the bottom — the "this has an edge" cue real glass
+                // always has.
+                .border(
+                    width = 1.dp,
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.35f),
+                            Color.White.copy(alpha = 0.06f),
+                        )
+                    ),
+                    shape = RoundedCornerShape(26.dp),
+                )
                 .imePadding()
         ) {
+            // Specular highlight — a soft diagonal sheen across the upper
+            // portion, like light catching a curved glass surface.
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(RoundedCornerShape(26.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.10f),
+                                Color.White.copy(alpha = 0.0f),
+                            ),
+                            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                            end = androidx.compose.ui.geometry.Offset(0f, 140f),
+                        )
+                    )
+            ) {}
+
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
