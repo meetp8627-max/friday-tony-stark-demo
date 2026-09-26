@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -75,6 +76,12 @@ fun ChatBar(
         modifier = Modifier
             .imePadding()
             .sizeIn(minHeight = 52.dp)
+            .shadow(
+                elevation = 12.dp,
+                shape = RoundedCornerShape(26.dp),
+                ambientColor = Color.Black,
+                spotColor = Color.Black
+            )
             .clip(RoundedCornerShape(26.dp))
             .background(sweep)
             .padding(1.5.dp) // glow border thickness
