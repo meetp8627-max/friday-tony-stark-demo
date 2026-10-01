@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -125,16 +126,18 @@ class OverlayBarService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedS
             WindowManager.LayoutParams.TYPE_PHONE
         }
 
+        val density = resources.displayMetrics.density
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            (40 * resources.displayMetrics.density).toInt(),
+            (210 * density).toInt(),
+            (52 * density).toInt(),
             overlayType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            y = (2 * density).toInt()
         }
 
         val view = ComposeView(this).apply {
@@ -160,56 +163,55 @@ private fun OverlayBarContent() {
     val intensity by OverlayState.intensity.collectAsState()
 
     val infinite = rememberInfiniteTransition(label = "overlayGlow")
-    val shift by infinite.animateFloat(
-        initialValue = 0f,
+    val breathing by infinite.animateFloat(
+        initialValue = 0.55f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = (3000 - (intensity * 1800)).toInt().coerceAtLeast(600), easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
+            animation = tween(durationMillis = (2600 - (intensity * 1400)).toInt().coerceAtLeast(900), easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
         ),
-        label = "shift"
+        label = "breathing"
     )
 
-    val sweep = Brush.horizontalGradient(
-        listOf(SiriAmber, SiriRose, SiriViolet, SiriTeal, SiriAmber)
+    val atmosphere = Brush.horizontalGradient(
+        listOf(SiriAmber, SiriRose, SiriViolet, SiriTeal)
     )
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 8.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        // Diffuse light behind the glass — soft ambient colour, no outline.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer { alpha = (0.22f + intensity * 0.30f) * breathing }
+                .blur(14.dp)
+                .clip(RoundedCornerShape(50))
+                .background(atmosphere)
+        )
+
+        // The glass pill itself: dark translucent body with a faint top sheen.
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(50))
-                .graphicsLayer { alpha = 0.65f + (intensity * 0.35f) }
-                .background(sweep)
-                .padding(horizontal = 14.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(50))
-                    .background(Color(0xCC121016)) // translucent glass fill
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.10f),
-                                Color.White.copy(alpha = 0.0f)
-                            )
+                .background(Color(0xE60B0A10))
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.12f),
+                            Color.White.copy(alpha = 0.0f)
                         )
-                    ) // specular highlight sheen
-                    .padding(horizontal = 12.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = label,
-                    color = Color.White,
-                    fontSize = 12.sp,
+                    )
                 )
-            }
+        ) {
+            Text(
+                text = label,
+                color = Color.White.copy(alpha = 0.85f),
+                fontSize = 11.sp,
+            )
         }
     }
 }
