@@ -15,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.livekit.android.compose.types.ReceivedMessage
 
 /**
@@ -34,20 +36,18 @@ fun UserMessage(
     }
     AnimatedVisibility(
         visibleState = state,
-        enter = fadeIn(),
+        enter = fadeIn(androidx.compose.animation.core.tween(350)),
         modifier = modifier
     ) {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp, 2.dp, 8.dp, 8.dp))
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            Text(
-                text = message.message,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(8.dp),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
+        // Your own words: small and quiet, no bubble — they belong to the
+        // assistant environment rather than sitting in a chat box.
+        Text(
+            text = message.message,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.End,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.58f),
+            modifier = modifier.padding(start = 56.dp)
+        )
     }
 }
